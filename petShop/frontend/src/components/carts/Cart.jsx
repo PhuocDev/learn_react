@@ -13,7 +13,7 @@ const Cart = () => {
     }
     const handleRemove = (props) => {
         const {id, price} = props;
-        console.log(id)
+        console.log('Deleted dogs id: ' +id)
         // addToCart();
         const newList = myCart.filter((item) => item.id !== id);
         addToCart(newList);

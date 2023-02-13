@@ -11,7 +11,7 @@ import { CartContext } from './context/CartContext';
 function App() {
 
   const [allDogs, setAllDogs] = useState([]);
-  const [myCart, addToCart] = useState([]);
+  const [myCart, addToCart] = useState([{}]);
   //tinh total
   const [total, setTotal] = useState(0);
 

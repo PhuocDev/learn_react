@@ -14,6 +14,7 @@ const DogCard = (props) => {
     const handleClick = () => {
         setAdded(true);
         const newItems = {
+            id: id,
             name: name,
             price: price,
             imageUrl: imageUrl,

@@ -5,11 +5,19 @@ import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
     
-    const {myCart,addToCart, total, setTotal} = useContext(CartContext);
+    const { myCart,addToCart, total, setTotal} = useContext(CartContext);
 
     const handleCheckout = () => {
         setTotal(0);
         addToCart([{}]);
+    }
+    const handleRemove = (props) => {
+        const {id, price} = props;
+        console.log(id)
+        // addToCart();
+        const newList = myCart.filter((item) => item.id !== id);
+        addToCart(newList);
+        setTotal((total) => (total -= Number(price)));
     }
 
     //hook use navigate
@@ -28,10 +36,17 @@ const Cart = () => {
                     // eslint-disable-next-line array-callback-return
                     myCart.slice(1).map((item) => {
                         return(
-                            <div className="cart-item">
+                            <div className="cart-item" key={item.id}>
                                 <img src={item.imageUrl} className="cart-item-img" alt=""/>
                                 {item.name} : {item.price}$
+                                <button className="cart-remove-item"
+                                    onClick={() => handleRemove(item)}
+                                    >
+                                    Delete
+                                </button>
                             </div>
+                            
+                            
                         )
                     })
                 }

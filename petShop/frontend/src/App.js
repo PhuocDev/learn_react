@@ -11,7 +11,10 @@ import { CartContext } from './context/CartContext';
 function App() {
 
   const [allDogs, setAllDogs] = useState([]);
-  const [myCart, addToCart] = useState([{}]);
+  const [myCart, addToCart] = useState([]);
+  //tinh total
+  const [total, setTotal] = useState(0);
+
 
   useEffect(() => {
     async function getData() {
@@ -26,17 +29,17 @@ function App() {
   }, [])
 
   return (
-    <CartContext.Provider value={{myCart, addToCart}}>
-    <Router>
-      <NavBar/>
-      <div className='page-container'>
-            <Routes>
-              <Route path="/" element={<Home/>}/>
-              <Route path='/dogs' element={<DogsPage allDogs={allDogs}/>}/>
-              <Route path='/cart' element={<Cart/>}/>
-            </Routes>
-        </div>
-    </Router>
+    <CartContext.Provider value={{myCart, addToCart, total, setTotal}}>
+      <Router>
+        <NavBar/>
+        <div className='page-container'>
+              <Routes>
+                <Route path="/" element={<Home/>}/>
+                <Route path='/dogs' element={<DogsPage allDogs={allDogs}/>}/>
+                <Route path='/cart' element={<Cart/>}/>
+              </Routes>
+          </div>
+      </Router>
     </CartContext.Provider>
   );
 }

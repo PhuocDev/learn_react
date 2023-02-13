@@ -1,11 +1,25 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { CartContext } from "../../context/CartContext";
 
 /* eslint-disable react/jsx-no-comment-textnodes */
 const DogCard = (props) => {
+
     const {id, name, breed, description, price, imageUrl} = props;
     const [isAdded, setAdded] = useState(false);
+
+    //hook to pass value to cart and calculate the total
+    const {addToCart, setTotal} = useContext(CartContext);
+    
+
     const handleClick = () => {
         setAdded(true);
+        const newItems = {
+            name: name,
+            price: price,
+            imageUrl: imageUrl,
+        };
+        addToCart((item) => [...item, newItems]);
+        setTotal((total) => (total += Number(price)));
     }
     return ( 
         <>

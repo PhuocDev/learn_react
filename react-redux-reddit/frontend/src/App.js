@@ -11,7 +11,7 @@ function App() {
     <div className="App">
       {
         isEdit ? (
-          <EditPage/>
+          <EditPage setEdit={setEdit}/>
         ) : (
           <Header setEdit={setEdit}/>
         )

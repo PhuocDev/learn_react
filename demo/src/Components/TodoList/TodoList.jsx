@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 export default function TodoList(props) {
-    const {todos, handleCheckbox, handleUpdate, handleDelete, newCaption } = props;
+    const {todos, handleCheckbox, handleUpdate, handleDelete } = props;
   return (
     <>
         <h4 className="row p-3">

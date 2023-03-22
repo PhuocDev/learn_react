@@ -15,7 +15,6 @@ export default function TodoApp() {
         // done: false
         // }
     ]);
-    const [newCaption, setNewCaption] = useState('');
 
 
     const handleSubmit = (e) => {
@@ -110,7 +109,6 @@ export default function TodoApp() {
             handleDelete={handleDelete}
             handleCheckbox={handleCheckbox}
             handleUpdate={handleUpdate}
-            newCaption= {newCaption}
             todos={todos}
         />
     </div>

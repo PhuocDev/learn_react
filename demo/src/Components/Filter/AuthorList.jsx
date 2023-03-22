@@ -4,8 +4,12 @@ const AuthorList = (props) => {
         <div>
             <ul>
                 {   
-                    data.filter((singleData) => singleData.author.includes(keyword)).map((singleData, index) => 
-                        <li key={singleData._id}>{singleData.author}</li>
+                    data
+                    .filter((singleData) => singleData.author.includes(keyword))
+                    .map((singleData, index) => 
+                        <li key={singleData._id}>
+                            {singleData.author}
+                        </li>
                     )
                 }
             </ul>

@@ -1,6 +1,6 @@
 import React from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import Proptypes from 'prop-types'
 export default function AddTodo(props) {
   return (
     <>
@@ -29,4 +29,9 @@ export default function AddTodo(props) {
         </form>
     </>
   )
+}
+AddTodo.propTypes = {
+    handleChangeInput: Proptypes.func.isRequired,
+    handleSubmit: Proptypes.func.isRequired,
+    input: Proptypes.string
 }

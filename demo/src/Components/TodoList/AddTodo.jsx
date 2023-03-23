@@ -10,7 +10,7 @@ export default function AddTodo(props) {
             </div>
             <div className="row d-flex justify-content-start">
                 <div className="col-auto">
-                    <input onChange={props.handleChangeInput} value={props.input} type="text" placeholder='Enter caption here' />
+                    <input onChange={props.handleChangeInput} required value={props.input} type="text" placeholder='Enter caption here' />
                 </div>
                 <div className="col-auto ">
                     <button className='btn btn-primary '> 

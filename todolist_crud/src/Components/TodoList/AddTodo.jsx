@@ -5,7 +5,7 @@ export default function AddTodo(props) {
   return (
     <>
         <form onSubmit={props.handleSubmit} >
-            <div className="row p-2 m-4">
+            <div className="row p-2 m-2">
                 <h2>SIMPLE TODO APP</h2> 
             </div>
             <div className="row">

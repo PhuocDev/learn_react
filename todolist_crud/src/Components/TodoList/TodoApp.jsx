@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AddTodo from './AddTodo';
 import TodoList from './TodoList';
@@ -14,7 +14,12 @@ export default function TodoApp() {
         // done: false
         // }
     ]);
-
+    
+    useEffect(() => {
+        const todosString = localStorage.getItem('todos');
+        const storedTodos = JSON.parse(todosString);
+        setTodos(storedTodos);
+    }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -36,6 +41,7 @@ export default function TodoApp() {
                     setTodos(newTodos);
                     setInput('');
                     e.target.reset();  //clear input
+                    localStorage.setItem('todos', JSON.stringify(newTodos));
                 }
             } else console.log("input is null")
         } else {
@@ -54,6 +60,7 @@ export default function TodoApp() {
                     setTodos(newTodos);
                     setInput('');
                     setIsUpdating(false);
+                    localStorage.setItem('todos', JSON.stringify(newTodos));
                 }
             } else console.log("input is null");
 
@@ -85,6 +92,7 @@ export default function TodoApp() {
         })
         setTodos(newTodos);
         setInput('');
+        localStorage.setItem('todos', JSON.stringify(newTodos));
     }
     const handleCheckbox = (id) => () => {
         const newTodos = todos.filter((todo) => {
@@ -94,6 +102,7 @@ export default function TodoApp() {
             } return todo;
         })
         setTodos(newTodos);
+        localStorage.setItem('todos', JSON.stringify(newTodos));
     }
     const handleUpdate = (todo) => ()  => {
         console.log('current todo: ', todo );

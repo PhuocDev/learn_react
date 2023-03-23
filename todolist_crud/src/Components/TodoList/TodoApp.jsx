@@ -18,7 +18,7 @@ export default function TodoApp() {
     useEffect(() => {
         const todosString = localStorage.getItem('todos');
         const storedTodos = JSON.parse(todosString);
-        setTodos(storedTodos);
+        setTodos(storedTodos || []);
     }, []);
 
     const handleSubmit = (e) => {
@@ -81,23 +81,23 @@ export default function TodoApp() {
     }
 
     const handleChangeInput = (e) => {
-        console.log(e.target.value);
+        // console.log(e.target.value);
         setInput(e.target.value);
     }
     const handleDelete = (id) => () => {
-        const newTodos = todos.filter((todo) => {
-            if (todo.id != id) {
-                return todo;
-            }
-        })
-        setTodos(newTodos);
-        setInput('');
-        localStorage.setItem('todos', JSON.stringify(newTodos));
+            const newTodos = todos.filter((todo) => {
+                if (todo.id != id) {
+                    return todo;
+                }
+            })
+            setTodos(newTodos);
+            setInput('');
+            localStorage.setItem('todos', JSON.stringify(newTodos));
     }
     const handleCheckbox = (id) => () => {
         const newTodos = todos.filter((todo) => {
             if (todo.id === id) {
-                todo.done = true;
+                todo.done = !todo.done;
                 return todo;
             } return todo;
         })

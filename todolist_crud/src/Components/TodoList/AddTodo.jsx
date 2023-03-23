@@ -19,7 +19,7 @@ export default function AddTodo(props) {
                      />
                 </div>
                 <div className="col-2 d-flex justify-content-start">
-                    <button className='btn btn-primary btn-rounded fs-5'> 
+                    <button className='btn btn-primary btn-rounded fs-5' title="click here to add new task"> 
                      {
                         (props.isUpdating) ? 'Update' : 'Add'
                      }

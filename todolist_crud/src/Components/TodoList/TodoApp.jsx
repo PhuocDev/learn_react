@@ -21,12 +21,19 @@ export default function TodoApp() {
         setTodos(storedTodos || []);
     }, []);
 
+    const checkPattern = () => {
+        var elem = input;
+        // Allow A-Z, a-z, 0-9 and underscore. Min 1 char.
+        var re = /^[a-zA-Z0-9_]+$/;
+        return re.test(elem);
+    }
+
     const handleSubmit = (e) => {
         e.preventDefault();
         //setInput(e.target.value);
         if (!isUpdating) {
             console.log("Add function clicked: ", input);
-            if (input!= '' && input!= null) {
+            if (checkPattern()) {
                 if (nameIsDuplicated(input) ) {
                     alert('Caption is existed!')
                     setInput('');

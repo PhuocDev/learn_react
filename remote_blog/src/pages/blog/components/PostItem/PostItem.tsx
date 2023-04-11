@@ -29,7 +29,7 @@ export default function PostItem({post, handleDelete, handleStartEditing}: PostI
                 </div>
             </div>
         </div>
-        
+
     </>
   )
 }

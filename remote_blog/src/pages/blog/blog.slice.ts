@@ -1,29 +1,89 @@
+import { current } from '@reduxjs/toolkit';
 /* eslint-disable prettier/prettier */
-import { createAction, createReducer, current, createSlice } from '@reduxjs/toolkit';
-import { initalPostList } from 'constants/blog';
+import {   createSlice, createAsyncThunk, AsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
+import { stat } from 'fs';
 import { Post } from 'types/blog.type'
+import http from 'utils/http';
+
+
+type GenericAsyncThunk = AsyncThunk<unknown, unknown, any>
+type PendingAction = ReturnType<GenericAsyncThunk['pending']>
+type RejectedAction = ReturnType<GenericAsyncThunk['rejected']>
+type FulfilledAction = ReturnType<GenericAsyncThunk['fulfilled']>
 
 interface BlogState {
     postList: Post[]
     editingPost: Post | null
+    loading: boolean
+    currentRequestId: string | undefined
 }
-const initalState: BlogState = {
+const initialState: BlogState = {
     postList: [],
     editingPost: null,
+    loading: false,
+    currentRequestId: undefined
 }
+
+export const getPostList = createAsyncThunk(
+    'blog/getPostList',
+    async(_,thunkAPI) => {
+        const response = await http.get<Post[]>('posts', {
+            signal: thunkAPI.signal
+        } )
+        return response.data
+    }
+)
+export const addPost = createAsyncThunk(
+    'blog/addPost',
+    async (body : Post,thunkAPI) => {
+        try {
+            const response = await http.post<Post>('posts',body, {
+                signal: thunkAPI.signal
+            } )
+            return response.data
+        } catch (error : any) {
+            console.log(error)
+            if (error.name === 'AxiosError' && error.response.status === 421) {
+                return thunkAPI.rejectWithValue(error.response.data);
+            }
+            throw error
+        }
+        
+    }
+) 
+export const updatePost = createAsyncThunk(
+    'blog/updatePost',
+    async ({postId, body} : {postId: string, body: Post},thunkAPI) => {
+        try {
+            const response = await http.put<Post>(`posts/${postId}`,body, {
+                signal: thunkAPI.signal
+            } )
+            return response.data
+        } catch (error : any) {
+            console.log(error);
+            if (error.name === 'AxiosError' && error.response.status === 422) {
+                return thunkAPI.rejectWithValue(error.response.data);
+            }
+            throw error
+        }
+        
+    }
+) 
+export const deletePost = createAsyncThunk(
+    'blog/deletePost',
+    async (postId : string,thunkAPI) => {
+        const response = await http.delete(`posts/${postId}`, {
+            signal: thunkAPI.signal
+        } )
+        return response.data
+    }
+)
 
 const blogSlice = createSlice({
     name: 'blog',
-    initialState: initalState,
+    initialState: initialState,
     reducers: {
-        deletePost: (state, action) => {
-            const postId = action.payload;
-            const foundPostIndex = state.postList.findIndex(post => post.id === postId)
-            if (foundPostIndex != -1) {
-                state.postList.splice(foundPostIndex,1);
-            }
-            console.log(action.type)
-        },
         startEditingPost: (state, action) => {
             const postId = action.payload;
             const foundPost = state.postList.find(post => post.id === postId) || null;
@@ -43,61 +103,54 @@ const blogSlice = createSlice({
                 return false;
             })
         },
-        addPost: (state, action) => {
-            const newPost = action.payload;
-            state.postList.push(newPost);
-        }
+ 
     }, extraReducers(builder) {
-        builder.addCase('blog/getPostListSuccess', (state, action: any) => {
+        builder
+        .addCase(getPostList.fulfilled, (state, action) => {
             state.postList = action.payload
         })
+        .addCase(addPost.fulfilled, (state, action) => {
+            state.postList.push(action.payload)
+        })
+        .addCase(updatePost.fulfilled, (state, action) => {
+            const postId = action.payload.id;
+            state.postList.some((post, index) => {
+                if (post.id === postId) {
+                    state.postList[index] = action.payload
+                    state.editingPost = null;
+                    return true;
+                }
+                return false;
+            })
+        })
+        .addCase(deletePost.fulfilled, (state, action) => {
+            //day la nhung thu truyen vao
+            const postId = action.meta.arg;
+            const foundPostIndex = state.postList.findIndex(post => post.id === postId)
+            if (foundPostIndex != -1) {
+                state.postList.splice(foundPostIndex,1);
+            }
+        })
+        .addMatcher<PendingAction>(
+            (action) => action.type.endsWith('/pending'),
+            (state, action) => {
+                state.loading = true;
+                state.currentRequestId = action.meta.requestId; //sinh ra khi gọi 1 api bất kì
+            }
+        )
+        .addMatcher<RejectedAction | FulfilledAction>(
+            (action) => (action.type.endsWith('/rejected') || action.type.endsWith('/fulfilled') ) ,
+            (state, action) => {
+                if (state.currentRequestId && state.currentRequestId === action.meta.requestId) {
+                    state.loading = false;
+                    state.currentRequestId = undefined;
+                }
+                
+            }
+        )
     }
 })
 
-export const {deletePost, addPost, startEditingPost, finishEditingPost, cancelEditingPost  } = blogSlice.actions
+export const {   startEditingPost, finishEditingPost, cancelEditingPost  } = blogSlice.actions
 const blogReducer = blogSlice.reducer
 export default blogReducer
-
-
-// //ten blog nen trung voi blog trong store.ts
-// export const addPost = createAction<Post>('blog/addPost')
-// export const deletePost = createAction<string>('blog/deletePost') 
-// export const startEditingPost = createAction<string>('blog/startEditingPost')
-// export const cancelEditingPost = createAction('blog/cancelEditingPost')
-// export const finishEditingPost = createAction<Post>('blog/finishEditingPost')
-
-// const blogReducer = createReducer(initalState, (builder) => {
-//     builder.addCase(addPost, (state, action) => {
-//         //immerJs: allow to mutate a state safely
-//         const newPost = action.payload;
-//         state.postList.push(newPost);
-//     }).addCase(deletePost, (state, action) => {
-//         const postId = action.payload;
-//         const foundPostIndex = state.postList.findIndex(post => post.id === postId)
-//         if (foundPostIndex != -1) {
-//             state.postList.splice(foundPostIndex,1);
-//         }
-//     }).addCase(startEditingPost, (state, action) => {
-//         const postId = action.payload;
-//         const foundPost = state.postList.find(post => post.id === postId) || null;
-//         state.editingPost = foundPost;
-//     }).addCase(cancelEditingPost, (state, action) => {
-//         state.editingPost = null;
-//     }).addCase(finishEditingPost, (state, action) => {
-//         const postId = action.payload.id;
-//         state.postList.some((post, index) => {
-//             if (post.id === postId) {
-//                 state.postList[index] = action.payload
-//                 state.editingPost = null;
-//                 return true;
-//             }
-//             return false;
-//         })
-//         state.editingPost = null;
-//     })
-//     // .addMatcher((action) => action.type.includes('cancel') ,(action, state) => {
-//     //     console.log(current(state));
-//     // })
-// } )
-
-// export default blogReducer
